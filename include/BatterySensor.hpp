@@ -1,0 +1,31 @@
+#pragma once
+
+class VehicleBatterySensor {
+    private:
+        double voltage;
+        double current;
+        double temperature;
+
+        double voltageBias;
+        double currentBias;
+        double temperatureBias;
+
+        double noiseLevel;
+    
+    public:
+        VehicleBatterySensor();
+
+        double getVoltage() const;
+        double getCurrent() const;
+        double getTemperature() const;
+
+        void setVoltage(double new_voltage);
+        void setCurrent(double new_current);
+        void setTemperature(double new_temperature);
+
+        void setVoltageBias(double vBias);
+        void setCurrentBias(double cBias);
+        void setTemperatureBias(double tBias);
+
+        void setNoiseLevel(double new_noise_level);
+};
