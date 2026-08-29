@@ -2,6 +2,10 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <thread>
+#include <chrono>
+
+// our vehicle diagnostic system will utilize a trapezoidal velocity profile testing methodology
 
 int main() {
     std::cout << "================================================= AxoVigil Vehical Diagnostic =================================================" << std::endl;
@@ -26,5 +30,25 @@ int main() {
 
     std::cout << "The test duration: " << (test_duration / 60) << min_or_mins << "and " << (test_duration % 60) << sec_or_secs << std::endl;
 
+    int max = test_duration;
+    while (test_duration != 0) {
+        std::cout << "\r\033[2K";
+
+        if (test_duration <= max && test_duration > (max * (2.0/3.0))) {
+            std::cout << "[ACCELERATING] | Time Remaining: " << test_duration << " seconds.";
+        }
+        else if (test_duration <= (max * (2.0/3.0)) && test_duration > (max * (1.0/3.0))) {
+            std::cout << "[CRUSING] | Time Remaining: " << test_duration << " seconds.";
+        }
+        else {
+            std::cout << "[DECELERATING] | Time Remaining: " << test_duration << " seconds.";
+        }
+        std::cout << std::flush;
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+
+        test_duration--;
+    }
+    std::cout << std::endl;
     return 0;
 }
