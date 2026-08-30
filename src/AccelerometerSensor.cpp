@@ -2,8 +2,8 @@
 
 VehicleAccelerometerSensor::VehicleAccelerometerSensor() : 
     accelerationX(0.0), accelerationY(0.0), accelerationZ(0.0),
-    biasX(0.0), biasY(0.0), biasZ(0.0), noiseLevel(0.0) {
-}
+    biasX(0.0), biasY(0.0), biasZ(0.0), noiseLevel(0.0) 
+{}
 
 void VehicleAccelerometerSensor::setAcceleration(double x, double y, double z) {
     accelerationX = x;

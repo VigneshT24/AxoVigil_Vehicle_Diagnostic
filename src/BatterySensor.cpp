@@ -3,8 +3,8 @@
 VehicleBatterySensor::VehicleBatterySensor() : 
     voltage(0.0), current(0.0), temperature(0.0),
     voltageBias(0.0), currentBias(0.0), temperatureBias(0.0),
-    noiseLevel(0.0) {
-}
+    noiseLevel(0.0) 
+{}
 
 double VehicleBatterySensor::getVoltage() const {
     return voltage + voltageBias + generateNoise(noiseLevel);

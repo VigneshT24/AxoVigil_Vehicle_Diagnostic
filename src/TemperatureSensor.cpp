@@ -2,8 +2,8 @@
 
 VehicleTemperatureSensor::VehicleTemperatureSensor() : 
     coolantTemperature(0.0), ambientTemperature(0.0), bias(0.0),
-    noiseLevel(0.0), minimumTemperature(0.0), maximumTemperature(0.0) {
-}
+    noiseLevel(0.0), minimumTemperature(0.0), maximumTemperature(0.0) 
+{}
 
 void VehicleTemperatureSensor::setCoolantTemperature(double cTemp) {
     coolantTemperature = cTemp;
