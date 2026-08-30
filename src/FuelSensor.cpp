@@ -1,11 +1,12 @@
 #include "FuelSensor.hpp"
+#include <iostream>
 
 VehicleFuelSensor::VehicleFuelSensor() : 
-    fuelLiters(0.0), tankCapacityLiters(0.0),
+    fuelLiters(0.0), tankCapacityLiters(2000.0),
     bias(0.0), sloshNoise(0.0)
 {}
 
-void VehicleFuelSensor::setActualFuelLiters(double new_liters) {
+void VehicleFuelSensor::setFuelLiters(double new_liters) {
     fuelLiters = new_liters;
 }
 
@@ -30,7 +31,7 @@ void VehicleFuelSensor::setSloshNoise(double new_noise) {
 }
 
 bool VehicleFuelSensor::isLowFuel() const {
-    if ((fuelLiters / tankCapacityLiters) < 0.05) {
+    if ((fuelLiters / tankCapacityLiters) <= 0.05) {
         return true;
     }
     return false;

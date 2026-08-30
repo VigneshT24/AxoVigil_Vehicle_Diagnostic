@@ -11,7 +11,7 @@ class VehicleFuelSensor : protected VehicleGeneralSensor {
     public:
         VehicleFuelSensor();
 
-        void setActualFuelLiters(double new_liters);
+        void setFuelLiters(double new_liters);
         void setTankCapacity(double new_liters);
 
         double getFuelLiters() const;

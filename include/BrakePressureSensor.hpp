@@ -19,7 +19,7 @@ class VehicleBrakePressureSensor : protected VehicleGeneralSensor {
         void setRearBrakePressure(double new_pressure);
 
         double getFrontBrakePressure() const;
-        double geTRearBrakePressure() const;
+        double getRearBrakePressure() const;
 
         double getAverageBrakePressure() const;
 

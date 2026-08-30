@@ -3,7 +3,7 @@
 
 VehicleBrakePressureSensor::VehicleBrakePressureSensor() : 
     FrontBrakePressure(0.0), RearBrakePressure(0.0),
-    pressureBias(0.0), noiseLevel(0.0), maximumPressure(0.0)
+    pressureBias(0.0), noiseLevel(0.0), maximumPressure(2000.0)
 {}
 
 void VehicleBrakePressureSensor::setFrontBrakePressure(double new_f_pressure) {
@@ -18,7 +18,7 @@ double VehicleBrakePressureSensor::getFrontBrakePressure() const {
     return FrontBrakePressure + pressureBias + generateNoise(noiseLevel);
 }
 
-double VehicleBrakePressureSensor::geTRearBrakePressure() const {
+double VehicleBrakePressureSensor::getRearBrakePressure() const {
     return RearBrakePressure + pressureBias + generateNoise(noiseLevel);
 }
 
