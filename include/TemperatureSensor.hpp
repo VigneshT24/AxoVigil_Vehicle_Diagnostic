@@ -1,6 +1,7 @@
 #pragma once
+#include "GeneralSensor.hpp"
 
-class VehicleTemperatureSensor {
+class VehicleTemperatureSensor : protected VehicleGeneralSensor {
     private:
         double coolantTemperature;
         double ambientTemperature;

@@ -1,6 +1,7 @@
 #pragma once
+#include "GeneralSensor.hpp"
 
-class VehicleBrakePressureSensor {
+class VehicleBrakePressureSensor : protected VehicleGeneralSensor {
     private:
         double FrontBrakePressure;
         double RearBrakePressure;

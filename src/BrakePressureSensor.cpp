@@ -15,11 +15,11 @@ void VehicleBrakePressureSensor::setRearBrakePressure(double new_r_pressure) {
 }
 
 double VehicleBrakePressureSensor::getFrontBrakePressure() const {
-    return FrontBrakePressure;
+    return FrontBrakePressure + pressureBias + generateNoise(noiseLevel);
 }
 
 double VehicleBrakePressureSensor::geTRearBrakePressure() const {
-    return RearBrakePressure;
+    return RearBrakePressure + pressureBias + generateNoise(noiseLevel);
 }
 
 double VehicleBrakePressureSensor::getAverageBrakePressure() const {

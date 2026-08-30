@@ -39,41 +39,49 @@ void VehicleTirePressureSensor::setRearRightTemperature(double new_rr_temp) {
 }
 
 double VehicleTirePressureSensor::getFrontLeftPressure() const {
-    return frontLeftPressure;
+    return frontLeftPressure + pressureBias + generateNoise(pressureNoise);
 }
 
 double VehicleTirePressureSensor::getFrontRightPressure() const {
-    return frontRightPressure;
+    return frontRightPressure + pressureBias + generateNoise(pressureNoise);
 }
 
 double VehicleTirePressureSensor::getRearLeftPressure() const {
-    return rearLeftPressure;
+    return rearLeftPressure + pressureBias + generateNoise(pressureNoise);
 }
 
 double VehicleTirePressureSensor::getRearRightPressure() const {
-    return rearRightPressure;
+    return rearRightPressure + pressureBias + generateNoise(pressureNoise);
 }
 
 double VehicleTirePressureSensor::getFrontLeftTemperature() const {
-    return frontLeftTemperature;
+    return frontLeftTemperature + temperatureBias + generateNoise(temperatureNoise);
 }
 
 double VehicleTirePressureSensor::getFrontRightTemperature() const {
-    return frontRightTemperature;
+    return frontRightTemperature + temperatureBias + generateNoise(temperatureNoise);
 }
 
 double VehicleTirePressureSensor::getRearLeftTemperature() const {
-    return rearLeftTemperature;
+    return rearLeftTemperature + temperatureBias + generateNoise(temperatureNoise);
 }
 
 double VehicleTirePressureSensor::getRearRightTemperature() const {
-    return rearRightTemperature;
+    return rearRightTemperature + temperatureBias + generateNoise(temperatureNoise);
 }
 
-void VehicleTirePressureSensor::setPressureBias(double new_bias) {
-    pressureBias = new_bias;
+void VehicleTirePressureSensor::setPressureBias(double p_bias) {
+    pressureBias = p_bias;
 }
 
-void VehicleTirePressureSensor::setPressureNoise(double new_noise) {
-    pressureNoise = new_noise;
+void VehicleTirePressureSensor::setPressureNoise(double p_noise) {
+    pressureNoise = p_noise;
+}
+
+void VehicleTirePressureSensor::setTemperatureBias(double t_bias) {
+    temperatureBias = t_bias;
+}
+
+void VehicleTirePressureSensor::setTemperatureNoise(double t_noise) {
+    temperatureNoise = t_noise;
 }

@@ -1,6 +1,7 @@
 #pragma once
+#include "GeneralSensor.hpp"
 
-class VehicleAccelerometerSensor {
+class VehicleAccelerometerSensor : protected VehicleGeneralSensor {
     private:
         double accelerationX;
         double accelerationY;
@@ -15,7 +16,7 @@ class VehicleAccelerometerSensor {
     public:
         VehicleAccelerometerSensor();
 
-        void setActualAcceleration(double x, double y, double z);
+        void setAcceleration(double x, double y, double z);
 
         double getAccelerationX() const;
         double getAccelerationY() const;

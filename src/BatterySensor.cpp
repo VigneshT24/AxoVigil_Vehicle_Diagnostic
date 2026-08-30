@@ -7,15 +7,15 @@ VehicleBatterySensor::VehicleBatterySensor() :
 }
 
 double VehicleBatterySensor::getVoltage() const {
-    return voltage;
+    return voltage + voltageBias + generateNoise(noiseLevel);
 }
 
 double VehicleBatterySensor::getCurrent() const {
-    return current;
+    return current + currentBias + generateNoise(noiseLevel);
 }
 
 double VehicleBatterySensor::getTemperature() const {
-    return temperature;
+    return temperature + temperatureBias + generateNoise(noiseLevel);
 }
 
 void VehicleBatterySensor::setVoltage(double new_voltage) {

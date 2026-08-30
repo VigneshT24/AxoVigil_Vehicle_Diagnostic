@@ -1,6 +1,7 @@
 #pragma once
+#include "GeneralSensor.hpp"
 
-class VehicleBatterySensor {
+class VehicleBatterySensor : protected VehicleGeneralSensor {
     private:
         double voltage;
         double current;

@@ -1,6 +1,7 @@
 #pragma once
+#include "GeneralSensor.hpp"
 
-class VehicleTirePressureSensor {
+class VehicleTirePressureSensor : protected VehicleGeneralSensor {
     private:
         // in PSI
         double frontLeftPressure;
@@ -15,7 +16,9 @@ class VehicleTirePressureSensor {
         double rearRightTemperature;
 
         double pressureBias;
+        double temperatureBias;
         double pressureNoise;
+        double temperatureNoise;
     
     public:
         VehicleTirePressureSensor();
@@ -40,6 +43,8 @@ class VehicleTirePressureSensor {
         double getRearLeftTemperature() const;
         double getRearRightTemperature() const;
 
-        void setPressureBias(double bias);
-        void setPressureNoise(double noise);
-}
+        void setPressureBias(double p_bias);
+        void setPressureNoise(double p_noise);
+        void setTemperatureBias(double t_bias);
+        void setTemperatureNoise(double t_noise);
+};

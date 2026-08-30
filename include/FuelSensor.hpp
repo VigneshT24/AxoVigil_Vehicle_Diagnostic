@@ -1,6 +1,7 @@
 #pragma once
+#include "GeneralSensor.hpp"
 
-class VehicleFuelSensor {
+class VehicleFuelSensor : protected VehicleGeneralSensor {
     private:
         double fuelLiters;
         double tankCapacityLiters;
@@ -20,4 +21,4 @@ class VehicleFuelSensor {
         void setSloshNoise(double new_noise);
 
         bool isLowFuel() const;
-}
+};
