@@ -39,7 +39,7 @@ void VehicleBatterySensor::setCurrentBias(double cBias) {
 }
 
 void VehicleBatterySensor::setTemperatureBias(double tBias) {
-    tBias = temperatureBias;
+    temperatureBias = tBias;
 }
 
 void VehicleBatterySensor::setNoiseLevel(double new_noise_level) {

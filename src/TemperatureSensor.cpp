@@ -30,5 +30,6 @@ void VehicleTemperatureSensor::setNoiseLevel(double new_noise_level) {
 }
 
 bool VehicleTemperatureSensor::isWithinSensorRange() const {
-    return;
+    return (coolantTemperature >= minimumTemperature && coolantTemperature < maximumTemperature) &&
+    (ambientTemperature >= minimumTemperature && ambientTemperature < maximumTemperature);
 }

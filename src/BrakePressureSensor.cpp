@@ -23,7 +23,7 @@ double VehicleBrakePressureSensor::geTRearBrakePressure() const {
 }
 
 double VehicleBrakePressureSensor::getAverageBrakePressure() const {
-    return;
+    return (FrontBrakePressure + RearBrakePressure) / 2.0;
 }
 
 void VehicleBrakePressureSensor::setPressureBias(double new_bias) {
@@ -35,5 +35,6 @@ void VehicleBrakePressureSensor::setNoiseLevel(double new_noise) {
 }
 
 bool VehicleBrakePressureSensor::isWithinSensorRange() const {
-    return;
+    return (FrontBrakePressure >= 0.0 && FrontBrakePressure < maximumPressure) 
+    && (RearBrakePressure >= 0.0 && RearBrakePressure < maximumPressure);
 }
