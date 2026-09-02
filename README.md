@@ -79,7 +79,7 @@ cd "/mnt/c/Users/YourName/Downloads/AxoVigil_Vehicle_Diagnostic"
 ### 5. Configure the Project
 
 ```bash
-cmake -S . -B build-linux -G Ninja
+cmake -S . -B build-linux
 ```
 
 ### 6. Build the Sensor Test Suite
