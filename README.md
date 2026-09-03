@@ -82,16 +82,28 @@ cd "/mnt/c/Users/YourName/Downloads/AxoVigil_Vehicle_Diagnostic"
 cmake -S . -B build-linux
 ```
 
-### 6. Build the Sensor Test Suite
+### 6.1 Build the Sensor Test Suite
 
 ```bash
 cmake --build build-linux --target SensorTests
 ```
 
-### 7. Run the Tests
+### 6.2 Build the Sensor AxoVigil Main
+
+```bash
+cmake --build build-linux --target AxoVigil
+```
+
+### 7.1 Run the SensorTests
 
 ```bash
 ./build-linux/SensorTests
+```
+
+###  7.2 Run the AxoVigil Main
+
+```bash
+./build-linux/AxoVigil
 ```
 
 If all tests succeed, the program will display:
@@ -104,7 +116,14 @@ If an assertion fails, the test suite will stop at the sensor check that produce
 
 ## Rebuilding After Changes
 
-After modifying sensor code:
+After modifying sensor code (for AxoVigil Main):
+
+```bash
+cmake --build build-linux --target AxoVigil
+./build-linux/AxoVigil
+```
+
+After modifying sensor code (for SensorTest Suite):
 
 ```bash
 cmake --build build-linux --target SensorTests

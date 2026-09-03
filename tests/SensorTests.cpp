@@ -230,7 +230,9 @@ int main() {
     battSensor.setVoltageBias(0.0);
     battSensor.setCurrentBias(0.0);
     battSensor.setTemperatureBias(0.0);
-    battSensor.setNoiseLevel(0.0);
+    battSensor.setVoltageNoise(0.0);
+    battSensor.setCurrentNoise(0.0);
+    battSensor.setTemperatureNoise(0.0);
 
     battSensor.setVoltage(13.8);
     battSensor.setCurrent(20.0);

@@ -163,6 +163,83 @@ int main() {
     tireSensor.setPressureBias(randomDouble(-0.5, 0.5));
     tireSensor.setPressureNoise(randomDouble(0.02, 0.10));
 
-    std::cout << std::endl;
+    
+    double phaseDuration = (test_duration / 3.0);
+    double maxSpeed = 160;
+    double speedIncreasePerSecond = (maxSpeed / phaseDuration);
+    double longitudinalAcceleration = speedIncreasePerSecond * 0.44704; // calculating the acceleration
+    int elapsed = 0;
+
+
+    // phase 1 of trapezoidal profile testing (idle to top speed)
+    for (int i = 0; i < phaseDuration; i++) {
+
+        // speed
+        double newSpeed = speedSensor.getSpeed() + speedIncreasePerSecond;
+
+        if (newSpeed > maxSpeed) {
+            newSpeed = maxSpeed;
+        }
+
+        speedSensor.setSpeed(newSpeed);
+
+        // acceleration
+        accelSensor.setAcceleration(longitudinalAcceleration, 0.0, 9.80665);
+
+        // coolant temperature
+        tempSensor.setCoolantTemperature(tempSensor.getCoolantTemperature() + randomDouble(0.10, 0.30));
+
+        // battery voltage
+        battSensor.setVoltage(battSensor.getVoltage() + randomDouble(-0.03, 0.03));
+
+        // battery current
+        battSensor.setCurrent(battSensor.getCurrent() + randomDouble(-0.5, 0.5));
+
+        // battery temperature
+        battSensor.setTemperature(battSensor.getTemperature() + randomDouble(0.01, 0.05));
+
+        // fuel
+        fuelSensor.setFuelLiters(fuelSensor.getFuelLiters() - randomDouble(0.002, 0.006));
+
+        // brake pressure stays near zero
+        brakeSensor.setFrontBrakePressure(randomDouble(0.0, 2.0));
+
+        brakeSensor.setRearBrakePressure(randomDouble(0.0, 2.0));
+
+        // tire pressure
+        tireSensor.setFrontLeftPressure(tireSensor.getFrontLeftPressure() + randomDouble(0.005, 0.020));
+
+        tireSensor.setFrontRightPressure(tireSensor.getFrontRightPressure() + randomDouble(0.005, 0.020));
+
+        tireSensor.setRearLeftPressure(tireSensor.getRearLeftPressure() + randomDouble(0.005, 0.020));
+
+        tireSensor.setRearRightPressure(tireSensor.getRearRightPressure() + randomDouble(0.005, 0.020));
+
+        // tire temperature
+        tireSensor.setFrontLeftTemperature(tireSensor.getFrontLeftTemperature() + randomDouble(0.03, 0.08));
+
+        tireSensor.setFrontRightTemperature(tireSensor.getFrontRightTemperature() + randomDouble(0.03, 0.08));
+
+        tireSensor.setRearLeftTemperature(tireSensor.getRearLeftTemperature() + randomDouble(0.03, 0.08));
+
+        tireSensor.setRearRightTemperature(tireSensor.getRearRightTemperature() + randomDouble(0.03, 0.08));
+
+        // temperory debug output
+        std::cout
+            << "Phase 1 | "
+            << "Time: " << elapsed + 1 << "s | "
+            << "Speed: " << speedSensor.getSpeed()
+            << " mph | "
+            << "Accel: " << accelSensor.getAccelerationX()
+            << " m/s^2 | "
+            << "Coolant: " << tempSensor.getCoolantTemperature()
+            << " C"
+            << std::endl;
+        
+        elapsed++;
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+
     return 0;
 }
