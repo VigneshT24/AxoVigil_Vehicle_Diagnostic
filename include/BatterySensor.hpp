@@ -11,7 +11,9 @@ class VehicleBatterySensor : protected VehicleGeneralSensor {
         double currentBias;
         double temperatureBias;
 
-        double noiseLevel;
+        double voltageNoise;
+        double currentNoise;
+        double temperatureNoise;
     
     public:
         VehicleBatterySensor();
@@ -28,5 +30,7 @@ class VehicleBatterySensor : protected VehicleGeneralSensor {
         void setCurrentBias(double cBias);
         void setTemperatureBias(double tBias);
 
-        void setNoiseLevel(double new_noise_level);
+        void setVoltageNoise(double new_noise);
+        void setCurrentNoise(double new_noise);
+        void setTemperatureNoise(double new_noise);
 };

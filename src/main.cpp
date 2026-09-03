@@ -106,6 +106,9 @@ int main() {
 
     std::cout << "\n\nJust to confirm, your vehicle type is a " << vehicleType.begin()->first << "." << std::endl
               << "You have currently " << (fuelRemain / 100.0) * vehicleType.begin()->second << " liters of fuel out of " << vehicleType.begin()->second << " total liters." << std::endl; 
+    
+    double tankCapacity = vehicleType.begin()->second;
+    double fuelLiters = (fuelRemain / 100.0) * tankCapacity;
 
     VehicleSpeedSensor speedSensor;
     VehicleAccelerometerSensor accelSensor;
@@ -117,7 +120,13 @@ int main() {
     
     // setting initial values before phase 1
     // values are chosen based on research on average estimated sensor reading of an idle vehicle
+    double ambientTemperature = randomDouble(18.0, 30.0);
     speedSensor.setSpeed(0.0);
+
+    tempSensor.setAmbientTemperature(ambientTemperature);
+    tempSensor.setCoolantTemperature(randomDouble(91.0, 98.0));
+    tempSensor.setBias(randomDouble(-0.4, 0.4));
+    tempSensor.setNoiseLevel(randomDouble(0.02, 0.15));
 
     accelSensor.setBias(randomDouble(-0.15, 0.15), randomDouble(-0.15, 0.15), randomDouble(-0.15, 0.15));
     accelSensor.setNoiseLevel(randomDouble(0.005, 0.030));
@@ -125,14 +134,16 @@ int main() {
 
     battSensor.setVoltage(randomDouble(13.7, 14.5));
     battSensor.setCurrent(randomDouble(1.0, 15.0));
-    battSensor.setTemperature(randomDouble(15, 38));
+    battSensor.setTemperature(ambientTemperature + randomDouble(0.0, 5.0));
     battSensor.setVoltageBias(randomDouble(-0.03, 0.03));
     battSensor.setCurrentBias(randomDouble(-0.10, 0.10));
     battSensor.setTemperatureBias(randomDouble(-3.0, 3.0));
-    battSensor.setNoiseLevel(randomDouble(0.005, 0.025));
+    battSensor.setVoltageNoise(randomDouble(0.005, 0.025));
+    battSensor.setCurrentNoise(randomDouble(0.005, 0.025));
+    battSensor.setTemperatureNoise(randomDouble(0.005, 0.025));
 
-    fuelSensor.setTankCapacity(70); // this one depends on the type of vehicle (prompted prior)
-    fuelSensor.setFuelLiters(38.5); // this one depends on the fuel set by user (prompted prior)
+    fuelSensor.setTankCapacity(tankCapacity); // this one depends on the type of vehicle (prompted prior)
+    fuelSensor.setFuelLiters(fuelLiters); // this one depends on the fuel set by user (prompted prior)
     fuelSensor.setBias(randomDouble(-0.50, 0.50));
     fuelSensor.setSloshNoise(randomDouble(0.0, 0.05));
 
@@ -141,19 +152,14 @@ int main() {
     brakeSensor.setFrontBrakePressure(randomDouble(0.0, 2.0));
     brakeSensor.setRearBrakePressure(randomDouble(0.0, 2.0));
 
-    tempSensor.setAmbientTemperature(randomDouble(18.0, 30.0));
-    tempSensor.setCoolantTemperature(randomDouble(91.0, 98.0));
-    tempSensor.setBias(randomDouble(-0.4, 0.4));
-    tempSensor.setNoiseLevel(randomDouble(0.02, 0.15));
-
     tireSensor.setFrontLeftPressure(randomDouble(34.0, 36.0));
     tireSensor.setFrontRightPressure(randomDouble(34.0, 36.0));
     tireSensor.setRearLeftPressure(randomDouble(34.0, 36.0));
     tireSensor.setRearRightPressure(randomDouble(34.0, 36.0));
-    tireSensor.setFrontLeftTemperature(randomDouble(16.5, 31.5));
-    tireSensor.setFrontRightTemperature(randomDouble(16.5, 31.5));
-    tireSensor.setRearLeftTemperature(randomDouble(16.5, 31.5));
-    tireSensor.setRearRightTemperature(randomDouble(16.5, 31.5));
+    tireSensor.setFrontLeftTemperature(ambientTemperature + randomDouble(-1.0, 1.0));
+    tireSensor.setFrontRightTemperature(ambientTemperature + randomDouble(-1.0, 1.0));
+    tireSensor.setRearLeftTemperature(ambientTemperature + randomDouble(-1.0, 1.0));
+    tireSensor.setRearRightTemperature(ambientTemperature + randomDouble(-1.0, 1.0));
     tireSensor.setPressureBias(randomDouble(-0.5, 0.5));
     tireSensor.setPressureNoise(randomDouble(0.02, 0.10));
 
