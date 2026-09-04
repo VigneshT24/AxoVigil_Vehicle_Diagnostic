@@ -1,39 +1,50 @@
 # AxoVigil Vehicle Diagnostic
 
-AxoVigil is a C++ vehicle diagnostic and sensor simulation project. The goal is to simulate a vehicle through acceleration, cruising, and deceleration while displaying live sensor data through a clean terminal dashboard.
+AxoVigil is a C++ vehicle diagnostic and sensor simulation project. The system simulates a vehicle through a trapezoidal velocity profile consisting of acceleration, constant-speed cruising, and deceleration while displaying live telemetry through an FTXUI terminal dashboard.
 
-The project is currently focused on building and testing the individual vehicle sensors before integrating them into the full simulation.
+The project currently includes a complete three-phase drive simulation, simulated vehicle sensors, dynamic low-fuel safety behavior, and sensor compliance testing.
 
 ## Sensors
 
 AxoVigil currently includes:
 
 - Vehicle speed
-- Acceleration
-- Brake pressure
-- Coolant temperature
+- 3-axis acceleration
+- Front and rear brake pressure
+- Ambient and coolant temperature
 - Battery voltage, current, and temperature
 - Fuel level
-- Tire pressure and temperature
+- Four-wheel tire pressure and temperature
 
-Sensors also simulate characteristics such as bias, noise, and measurement ranges.
+Sensors simulate characteristics such as bias, noise, and measurement ranges while maintaining stable readings between simulation updates.
+
+## Current Features
+
+- Live-updating FTXUI terminal dashboard
+- Trapezoidal acceleration, cruise, and deceleration profile
+- Real-time vehicle telemetry
+- Fuel, battery, brake, temperature, motion, and tire monitoring
+- Dynamic low-fuel emergency detection
+- Automatic emergency deceleration when fuel becomes critically low
+- Sensor bias and noise simulation
+- Sensor compliance test suite
 
 ## Planned Features
 
-- Live-updating terminal dashboard
-- Acceleration, cruise, and deceleration simulation
-- Vehicle diagnostic warnings
+- Expanded vehicle diagnostic warnings
 - Sensor fault detection
+- Simulated vehicle fault scenarios
 - PID-based speed control
-- Telemetry logging
-- Vehicle fault scenarios
+- Telemetry logging and replay
+- Additional FTXUI diagnostic and sensor-detail views
 
-## Running the Sensor Tests
+## Running AxoVigil
 
 ### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/VigneshT24/AxoVigil_Vehicle_Diagnostic.git
+
 cd AxoVigil_Vehicle_Diagnostic
 ```
 
@@ -63,6 +74,7 @@ Inside WSL:
 
 ```bash
 sudo apt update
+
 sudo apt install build-essential cmake ninja-build
 ```
 
@@ -82,28 +94,30 @@ cd "/mnt/c/Users/YourName/Downloads/AxoVigil_Vehicle_Diagnostic"
 cmake -S . -B build-linux
 ```
 
-### 6.1 Build the Sensor Test Suite
-
-```bash
-cmake --build build-linux --target SensorTests
-```
-
-### 6.2 Build the Sensor AxoVigil Main
+### 6.1 Build AxoVigil
 
 ```bash
 cmake --build build-linux --target AxoVigil
 ```
 
-### 7.1 Run the SensorTests
+### 6.2 Build the Sensor Test Suite
 
 ```bash
-./build-linux/SensorTests
+cmake --build build-linux --target SensorTests
 ```
 
-###  7.2 Run the AxoVigil Main
+### 7.1 Run AxoVigil
 
 ```bash
 ./build-linux/AxoVigil
+```
+
+The program will prompt for the diagnostic test duration, vehicle type, and current fuel level before launching the live FTXUI dashboard.
+
+### 7.2 Run the Sensor Tests
+
+```bash
+./build-linux/SensorTests
 ```
 
 If all tests succeed, the program will display:
@@ -116,23 +130,25 @@ If an assertion fails, the test suite will stop at the sensor check that produce
 
 ## Rebuilding After Changes
 
-After modifying sensor code (for AxoVigil Main):
+After modifying AxoVigil:
 
 ```bash
 cmake --build build-linux --target AxoVigil
+
 ./build-linux/AxoVigil
 ```
 
-After modifying sensor code (for SensorTest Suite):
+After modifying the sensor test suite:
 
 ```bash
 cmake --build build-linux --target SensorTests
+
 ./build-linux/SensorTests
 ```
 
 ## Build Files
 
-The generated build directories should not be committed to GitHub.
+Generated build directories should not be committed to GitHub.
 
 Add these to `.gitignore`:
 
