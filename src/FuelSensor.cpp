@@ -7,7 +7,7 @@ VehicleFuelSensor::VehicleFuelSensor() :
 {}
 
 void VehicleFuelSensor::setFuelLiters(double new_liters) {
-    fuelLiters = new_liters;
+    fuelLiters = new_liters + bias + generateNoise(sloshNoise);
 }
 
 void VehicleFuelSensor::setTankCapacity(double new_liters) {
@@ -15,7 +15,7 @@ void VehicleFuelSensor::setTankCapacity(double new_liters) {
 }
 
 double VehicleFuelSensor::getFuelLiters() const {
-    return fuelLiters + bias + generateNoise(sloshNoise);
+    return fuelLiters;
 }
 
 double VehicleFuelSensor::getFuelPercentage() const {

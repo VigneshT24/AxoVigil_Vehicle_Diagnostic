@@ -6,21 +6,21 @@ VehicleAccelerometerSensor::VehicleAccelerometerSensor() :
 {}
 
 void VehicleAccelerometerSensor::setAcceleration(double x, double y, double z) {
-    accelerationX = x;
-    accelerationY = y;
-    accelerationZ = z;
+    accelerationX = x + biasX + generateNoise(noiseLevel);
+    accelerationY = y + biasY + generateNoise(noiseLevel);
+    accelerationZ = z + biasZ + generateNoise(noiseLevel);
 }
 
 double VehicleAccelerometerSensor::getAccelerationX() const {
-    return accelerationX + biasX + generateNoise(noiseLevel);
+    return accelerationX;
 }
 
 double VehicleAccelerometerSensor::getAccelerationY() const {
-    return accelerationY + biasY + generateNoise(noiseLevel);
+    return accelerationY;
 }
 
 double VehicleAccelerometerSensor::getAccelerationZ() const {
-    return accelerationZ + biasZ + generateNoise(noiseLevel);
+    return accelerationZ;
 }
 
 void VehicleAccelerometerSensor::setBias(double xBias, double yBias, double zBias) {

@@ -6,19 +6,19 @@ VehicleTemperatureSensor::VehicleTemperatureSensor() :
 {}
 
 void VehicleTemperatureSensor::setCoolantTemperature(double cTemp) {
-    coolantTemperature = cTemp;
+    coolantTemperature = cTemp + bias + generateNoise(noiseLevel);
 }
 
 void VehicleTemperatureSensor::setAmbientTemperature(double aTemp) {
-    ambientTemperature = aTemp;
+    ambientTemperature = aTemp + bias + generateNoise(noiseLevel);
 }
 
 double VehicleTemperatureSensor::getCoolantTemperature() const {
-    return coolantTemperature + bias + generateNoise(noiseLevel);
+    return coolantTemperature;
 }
 
 double VehicleTemperatureSensor::getAmbientTemperature() const {
-    return ambientTemperature + bias + generateNoise(noiseLevel);
+    return ambientTemperature;
 }
 
 void VehicleTemperatureSensor::setBias(double new_bias) {

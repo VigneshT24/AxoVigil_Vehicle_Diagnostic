@@ -7,67 +7,67 @@ VehicleTirePressureSensor::VehicleTirePressureSensor() :
 {}
 
 void VehicleTirePressureSensor::setFrontLeftPressure(double new_fl_pressure) {
-    frontLeftPressure = new_fl_pressure;
+    frontLeftPressure = new_fl_pressure + pressureBias + generateNoise(pressureNoise);
 }
 
 void VehicleTirePressureSensor::setFrontRightPressure(double new_fr_pressure) {
-    frontRightPressure = new_fr_pressure;
+    frontRightPressure = new_fr_pressure + pressureBias + generateNoise(pressureNoise);
 }
 
 void VehicleTirePressureSensor::setRearLeftPressure(double new_rl_pressure) {
-    rearLeftPressure = new_rl_pressure;
+    rearLeftPressure = new_rl_pressure + pressureBias + generateNoise(pressureNoise);
 }
 
 void VehicleTirePressureSensor::setRearRightPressure(double new_rr_pressure) {
-    rearRightPressure = new_rr_pressure;
+    rearRightPressure = new_rr_pressure + pressureBias + generateNoise(pressureNoise);
 }
 
 void VehicleTirePressureSensor::setFrontLeftTemperature(double new_fl_temp) {
-    frontLeftTemperature = new_fl_temp;
+    frontLeftTemperature = new_fl_temp + temperatureBias + generateNoise(temperatureNoise);;
 }
 
 void VehicleTirePressureSensor::setFrontRightTemperature(double new_fr_temp) {
-    frontRightTemperature = new_fr_temp;
+    frontRightTemperature = new_fr_temp + temperatureBias + generateNoise(temperatureNoise);;
 }
 
 void VehicleTirePressureSensor::setRearLeftTemperature(double new_rl_temp) {
-    rearLeftTemperature = new_rl_temp;
+    rearLeftTemperature = new_rl_temp + temperatureBias + generateNoise(temperatureNoise);;
 }
 
 void VehicleTirePressureSensor::setRearRightTemperature(double new_rr_temp) {
-    rearRightTemperature = new_rr_temp;
+    rearRightTemperature = new_rr_temp + temperatureBias + generateNoise(temperatureNoise);;
 }
 
 double VehicleTirePressureSensor::getFrontLeftPressure() const {
-    return frontLeftPressure + pressureBias + generateNoise(pressureNoise);
+    return frontLeftPressure;
 }
 
 double VehicleTirePressureSensor::getFrontRightPressure() const {
-    return frontRightPressure + pressureBias + generateNoise(pressureNoise);
+    return frontRightPressure;
 }
 
 double VehicleTirePressureSensor::getRearLeftPressure() const {
-    return rearLeftPressure + pressureBias + generateNoise(pressureNoise);
+    return rearLeftPressure;
 }
 
 double VehicleTirePressureSensor::getRearRightPressure() const {
-    return rearRightPressure + pressureBias + generateNoise(pressureNoise);
+    return rearRightPressure;
 }
 
 double VehicleTirePressureSensor::getFrontLeftTemperature() const {
-    return frontLeftTemperature + temperatureBias + generateNoise(temperatureNoise);
+    return frontLeftTemperature;
 }
 
 double VehicleTirePressureSensor::getFrontRightTemperature() const {
-    return frontRightTemperature + temperatureBias + generateNoise(temperatureNoise);
+    return frontRightTemperature;
 }
 
 double VehicleTirePressureSensor::getRearLeftTemperature() const {
-    return rearLeftTemperature + temperatureBias + generateNoise(temperatureNoise);
+    return rearLeftTemperature;
 }
 
 double VehicleTirePressureSensor::getRearRightTemperature() const {
-    return rearRightTemperature + temperatureBias + generateNoise(temperatureNoise);
+    return rearRightTemperature;
 }
 
 void VehicleTirePressureSensor::setPressureBias(double p_bias) {

@@ -6,7 +6,11 @@
 #include <chrono>
 #include <random>
 #include <unordered_map>
+#include <iomanip>
 
+#include <ftxui/component/app.hpp>
+#include <ftxui/component/component.hpp>
+#include <ftxui/dom/elements.hpp>
 #include <AccelerometerSensor.hpp>
 #include <BatterySensor.hpp>
 #include <BrakePressureSensor.hpp>
@@ -15,7 +19,21 @@
 #include <TemperatureSensor.hpp>
 #include <TirePressureSensor.hpp>
 
+using namespace ftxui;
+
 // our vehicle diagnostic system will utilize a trapezoidal velocity profile testing methodology
+
+std::string formatDouble(double value, int precision = 2) {
+
+    std::ostringstream stream;
+
+    stream
+        << std::fixed
+        << std::setprecision(precision)
+        << value;
+
+    return stream.str();
+}
 
 double randomDouble(double min, double max) {
     static std::random_device rd;
@@ -38,6 +56,7 @@ int main() {
 
     // currently either "NORMAL" or "ABNORMAL"
     std::string status = "";
+    std::string currentPhase = "INITIALIZING";
 
     int test_duration = 0;
 
@@ -106,6 +125,8 @@ int main() {
 
     std::cout << "\n\nJust to confirm, your vehicle type is a " << vehicleType.begin()->first << "." << std::endl
               << "You have currently " << (fuelRemain / 100.0) * vehicleType.begin()->second << " liters of fuel out of " << vehicleType.begin()->second << " total liters." << std::endl; 
+
+    std::this_thread::sleep_for(std::chrono::seconds(5));
     
     double tankCapacity = vehicleType.begin()->second;
     double fuelLiters = (fuelRemain / 100.0) * tankCapacity;
@@ -121,10 +142,29 @@ int main() {
     // setting initial values before phase 1
     // values are chosen based on research on average estimated sensor reading of an idle vehicle
     double ambientTemperature = randomDouble(18.0, 30.0);
-    speedSensor.setSpeed(0.0);
+
+    // simulated vehicle state; sensor getters are reserved for readings/output
+    double vehicleSpeed = 0.0;
+    double coolantTemperature = randomDouble(91.0, 98.0);
+    double batteryVoltage = randomDouble(13.7, 14.5);
+    double batteryCurrent = randomDouble(1.0, 15.0);
+    double batteryTemperature = ambientTemperature + randomDouble(0.0, 5.0);
+    double remainingFuel = fuelLiters;
+
+    double frontLeftPressure = randomDouble(34.0, 36.0);
+    double frontRightPressure = randomDouble(34.0, 36.0);
+    double rearLeftPressure = randomDouble(34.0, 36.0);
+    double rearRightPressure = randomDouble(34.0, 36.0);
+
+    double frontLeftTireTemperature = ambientTemperature + randomDouble(-1.0, 1.0);
+    double frontRightTireTemperature = ambientTemperature + randomDouble(-1.0, 1.0);
+    double rearLeftTireTemperature = ambientTemperature + randomDouble(-1.0, 1.0);
+    double rearRightTireTemperature = ambientTemperature + randomDouble(-1.0, 1.0);
+
+    speedSensor.setSpeed(vehicleSpeed);
 
     tempSensor.setAmbientTemperature(ambientTemperature);
-    tempSensor.setCoolantTemperature(randomDouble(91.0, 98.0));
+    tempSensor.setCoolantTemperature(coolantTemperature);
     tempSensor.setBias(randomDouble(-0.4, 0.4));
     tempSensor.setNoiseLevel(randomDouble(0.02, 0.15));
 
@@ -132,9 +172,9 @@ int main() {
     accelSensor.setNoiseLevel(randomDouble(0.005, 0.030));
     accelSensor.setAcceleration(0.0, 0.0, 9.80665);
 
-    battSensor.setVoltage(randomDouble(13.7, 14.5));
-    battSensor.setCurrent(randomDouble(1.0, 15.0));
-    battSensor.setTemperature(ambientTemperature + randomDouble(0.0, 5.0));
+    battSensor.setVoltage(batteryVoltage);
+    battSensor.setCurrent(batteryCurrent);
+    battSensor.setTemperature(batteryTemperature);
     battSensor.setVoltageBias(randomDouble(-0.03, 0.03));
     battSensor.setCurrentBias(randomDouble(-0.10, 0.10));
     battSensor.setTemperatureBias(randomDouble(-3.0, 3.0));
@@ -143,7 +183,7 @@ int main() {
     battSensor.setTemperatureNoise(randomDouble(0.005, 0.025));
 
     fuelSensor.setTankCapacity(tankCapacity); // this one depends on the type of vehicle (prompted prior)
-    fuelSensor.setFuelLiters(fuelLiters); // this one depends on the fuel set by user (prompted prior)
+    fuelSensor.setFuelLiters(remainingFuel); // this one depends on the fuel set by user (prompted prior)
     fuelSensor.setBias(randomDouble(-0.50, 0.50));
     fuelSensor.setSloshNoise(randomDouble(0.0, 0.05));
 
@@ -152,94 +192,497 @@ int main() {
     brakeSensor.setFrontBrakePressure(randomDouble(0.0, 2.0));
     brakeSensor.setRearBrakePressure(randomDouble(0.0, 2.0));
 
-    tireSensor.setFrontLeftPressure(randomDouble(34.0, 36.0));
-    tireSensor.setFrontRightPressure(randomDouble(34.0, 36.0));
-    tireSensor.setRearLeftPressure(randomDouble(34.0, 36.0));
-    tireSensor.setRearRightPressure(randomDouble(34.0, 36.0));
-    tireSensor.setFrontLeftTemperature(ambientTemperature + randomDouble(-1.0, 1.0));
-    tireSensor.setFrontRightTemperature(ambientTemperature + randomDouble(-1.0, 1.0));
-    tireSensor.setRearLeftTemperature(ambientTemperature + randomDouble(-1.0, 1.0));
-    tireSensor.setRearRightTemperature(ambientTemperature + randomDouble(-1.0, 1.0));
+    tireSensor.setFrontLeftPressure(frontLeftPressure);
+    tireSensor.setFrontRightPressure(frontRightPressure);
+    tireSensor.setRearLeftPressure(rearLeftPressure);
+    tireSensor.setRearRightPressure(rearRightPressure);
+    tireSensor.setFrontLeftTemperature(frontLeftTireTemperature);
+    tireSensor.setFrontRightTemperature(frontRightTireTemperature);
+    tireSensor.setRearLeftTemperature(rearLeftTireTemperature);
+    tireSensor.setRearRightTemperature(rearRightTireTemperature);
     tireSensor.setPressureBias(randomDouble(-0.5, 0.5));
     tireSensor.setPressureNoise(randomDouble(0.02, 0.10));
 
     
     double phaseDuration = (test_duration / 3.0);
-    double maxSpeed = 160;
+    double maxSpeed = 80;
     double speedIncreasePerSecond = (maxSpeed / phaseDuration);
     double longitudinalAcceleration = speedIncreasePerSecond * 0.44704; // calculating the acceleration
     int elapsed = 0;
 
+    auto screen = App::Fullscreen();
 
-    // phase 1 of trapezoidal profile testing (idle to top speed)
-    for (int i = 0; i < phaseDuration; i++) {
+    auto renderer = Renderer([&] {
 
-        // speed
-        double newSpeed = speedSensor.getSpeed() + speedIncreasePerSecond;
+        // gauge panel
 
-        if (newSpeed > maxSpeed) {
-            newSpeed = maxSpeed;
+        double speedPercent = speedSensor.getSpeed() / maxSpeed;
+
+        if (speedPercent < 0.0) {
+            speedPercent = 0.0;
         }
 
-        speedSensor.setSpeed(newSpeed);
+        if (speedPercent > 1.0) {
+            speedPercent = 1.0;
+        }
 
-        // acceleration
-        accelSensor.setAcceleration(longitudinalAcceleration, 0.0, 9.80665);
 
-        // coolant temperature
-        tempSensor.setCoolantTemperature(tempSensor.getCoolantTemperature() + randomDouble(0.10, 0.30));
+        double fuelPercent = fuelSensor.getFuelPercentage() / 100.0;
 
-        // battery voltage
-        battSensor.setVoltage(battSensor.getVoltage() + randomDouble(-0.03, 0.03));
+        if (fuelPercent < 0.0) {
+            fuelPercent = 0.0;
+        }
 
-        // battery current
-        battSensor.setCurrent(battSensor.getCurrent() + randomDouble(-0.5, 0.5));
+        if (fuelPercent > 1.0) {
+            fuelPercent = 1.0;
+        }
 
-        // battery temperature
-        battSensor.setTemperature(battSensor.getTemperature() + randomDouble(0.01, 0.05));
+        // motion panel
 
-        // fuel
-        fuelSensor.setFuelLiters(fuelSensor.getFuelLiters() - randomDouble(0.002, 0.006));
+        auto motionPanel = vbox({
+            text("MOTION") | bold | hcenter,
+            separator(),
 
-        // brake pressure stays near zero
-        brakeSensor.setFrontBrakePressure(randomDouble(0.0, 2.0));
+            text("Speed: " + formatDouble(speedSensor.getSpeed(), 1) + " mph"),
 
-        brakeSensor.setRearBrakePressure(randomDouble(0.0, 2.0));
+            gauge(speedPercent),
 
-        // tire pressure
-        tireSensor.setFrontLeftPressure(tireSensor.getFrontLeftPressure() + randomDouble(0.005, 0.020));
+            separator(),
 
-        tireSensor.setFrontRightPressure(tireSensor.getFrontRightPressure() + randomDouble(0.005, 0.020));
+            text("Acceleration X: " + formatDouble(accelSensor.getAccelerationX(), 2) + " m/s^2"),
 
-        tireSensor.setRearLeftPressure(tireSensor.getRearLeftPressure() + randomDouble(0.005, 0.020));
+            text("Acceleration Y: " + formatDouble(accelSensor.getAccelerationY(), 2) + " m/s^2"),
 
-        tireSensor.setRearRightPressure(tireSensor.getRearRightPressure() + randomDouble(0.005, 0.020));
+            text("Acceleration Z: " + formatDouble(accelSensor.getAccelerationZ(), 2) + " m/s^2")
 
-        // tire temperature
-        tireSensor.setFrontLeftTemperature(tireSensor.getFrontLeftTemperature() + randomDouble(0.03, 0.08));
+        }) | border | flex;
 
-        tireSensor.setFrontRightTemperature(tireSensor.getFrontRightTemperature() + randomDouble(0.03, 0.08));
+        // temperature panel
 
-        tireSensor.setRearLeftTemperature(tireSensor.getRearLeftTemperature() + randomDouble(0.03, 0.08));
+        auto temperaturePanel = vbox({
+            text("TEMPERATURE") | bold | hcenter,
+            separator(),
 
-        tireSensor.setRearRightTemperature(tireSensor.getRearRightTemperature() + randomDouble(0.03, 0.08));
+            text("Ambient: " + formatDouble(tempSensor.getAmbientTemperature(), 1) + " C"),
 
-        // temperory debug output
-        std::cout
-            << "Phase 1 | "
-            << "Time: " << elapsed + 1 << "s | "
-            << "Speed: " << speedSensor.getSpeed()
-            << " mph | "
-            << "Accel: " << accelSensor.getAccelerationX()
-            << " m/s^2 | "
-            << "Coolant: " << tempSensor.getCoolantTemperature()
-            << " C"
-            << std::endl;
-        
-        elapsed++;
+            text("Coolant: " + formatDouble(tempSensor.getCoolantTemperature(), 1) + " C"),
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
+            text("Battery: " + formatDouble(battSensor.getTemperature(), 1) + " C")
+
+        }) | border | flex;
+
+        // battery panel
+
+        auto electricalPanel = vbox({
+            text("BATTERY / ELECTRICAL") | bold | hcenter,
+            separator(),
+
+            text("Voltage: " + formatDouble(battSensor.getVoltage(), 2) + " V"),
+
+            text("Current: " + formatDouble(battSensor.getCurrent(), 2) + " A"),
+
+            text("Temperature: " + formatDouble(battSensor.getTemperature(), 1) + " C")
+
+        }) | border | flex;
+
+        // fuel panel
+
+        auto fuelPanel = vbox({
+            text("FUEL") | bold | hcenter,
+            separator(),
+
+            text("Remaining: " + formatDouble(fuelSensor.getFuelLiters(), 2) + " L"),
+
+            text("Fuel Level: " + formatDouble(fuelSensor.getFuelPercentage(), 1) + " %"),
+
+            gauge(fuelPercent),
+
+            text(fuelSensor.isLowFuel() ? "Status: LOW FUEL" : "Status: NORMAL")
+
+        }) | border | flex;
+
+        // brake panel
+
+        auto brakePanel = vbox({
+            text("BRAKE SYSTEM") | bold | hcenter,
+            separator(),
+
+            text("Front Pressure: " + formatDouble(brakeSensor.getFrontBrakePressure(), 1) + " PSI"),
+
+            text("Rear Pressure: " + formatDouble(brakeSensor.getRearBrakePressure(), 1) + " PSI"),
+
+            text("Average Pressure: " + formatDouble(brakeSensor.getAverageBrakePressure(), 1) + " PSI"),
+
+            text(brakeSensor.isWithinSensorRange() ? "Sensor Range: NORMAL" : "Sensor Range: INVALID")
+
+        }) | border | flex;
+
+
+        // tire pressure panel
+
+        auto tirePressurePanel = vbox({
+            text("TIRE PRESSURE") | bold | hcenter,
+            separator(),
+
+            hbox({
+                text("FL: " + formatDouble( tireSensor.getFrontLeftPressure(), 2) + " PSI"),
+
+                filler(),
+
+                text("FR: " + formatDouble( tireSensor.getFrontRightPressure(), 2) + " PSI")
+            }),
+
+            hbox({
+                text("RL: " + formatDouble( tireSensor.getRearLeftPressure(), 2) + " PSI"),
+
+                filler(),
+
+                text("RR: " + formatDouble( tireSensor.getRearRightPressure(), 2) + " PSI")
+            })
+
+        }) | border | flex;
+
+
+        // tire temperature panel 
+
+        auto tireTemperaturePanel = vbox({
+            text("TIRE TEMPERATURE") | bold | hcenter,
+            separator(),
+
+            hbox({
+                text("FL: " + formatDouble( tireSensor.getFrontLeftTemperature(), 1) + " C"),
+
+                filler(),
+
+                text("FR: " + formatDouble( tireSensor.getFrontRightTemperature(), 1) + " C")
+            }),
+
+            hbox({
+                text("RL: " + formatDouble( tireSensor.getRearLeftTemperature(), 1) + " C"),
+
+                filler(),
+
+                text("RR: " + formatDouble( tireSensor.getRearRightTemperature(), 1) + " C")
+            })
+
+        }) | border | flex;
+
+
+        // main dashboard
+
+        return vbox({
+
+            text("AXOVIGIL VEHICLE DIAGNOSTIC")
+                | bold
+                | hcenter,
+
+            separator(),
+
+            hbox({
+                text("Phase: " + currentPhase), filler(),
+                text("Time: " + std::to_string(elapsed) + " / " + std::to_string(test_duration) + " s")
+            }),
+
+            separator(),
+
+            // Row 1
+            hbox({
+                motionPanel,
+                temperaturePanel
+            }),
+
+            // Row 2
+            hbox({
+                electricalPanel,
+                fuelPanel
+            }),
+
+            // Row 3
+            hbox({
+                brakePanel,
+                tirePressurePanel
+            }),
+
+            // Row 4
+            hbox({
+                tireTemperaturePanel
+            })
+
+        }) | border;
+    });
+
+    std::thread simulationThread([&] {
+
+        currentPhase = "ACCELERATING";
+
+        for (int i = 0; i < phaseDuration; i++) {
+
+            // speed
+            vehicleSpeed += speedIncreasePerSecond;
+
+            if (vehicleSpeed > maxSpeed) {
+                vehicleSpeed = maxSpeed;
+            }
+
+            speedSensor.setSpeed(vehicleSpeed);
+
+            // acceleration
+            accelSensor.setAcceleration(longitudinalAcceleration, 0.0, 9.80665);
+
+            // coolant temperature
+            coolantTemperature += randomDouble(0.10, 0.30);
+            tempSensor.setCoolantTemperature(coolantTemperature);
+
+            // battery voltage
+            batteryVoltage += randomDouble(-0.03, 0.03);
+            battSensor.setVoltage(batteryVoltage);
+
+            // battery current
+            batteryCurrent += randomDouble(-0.5, 0.5);
+            battSensor.setCurrent(batteryCurrent);
+
+            // battery temperature
+            batteryTemperature += randomDouble(0.01, 0.05);
+            battSensor.setTemperature(batteryTemperature);
+
+            // fuel
+            remainingFuel -= randomDouble(0.01, 0.03);
+            fuelSensor.setFuelLiters(remainingFuel);
+
+            // brake pressure stays near zero
+            brakeSensor.setFrontBrakePressure(0.0);
+
+            brakeSensor.setRearBrakePressure(0.0);
+
+            // tire pressure
+            frontLeftPressure += randomDouble(0.005, 0.020);
+            tireSensor.setFrontLeftPressure(frontLeftPressure);
+
+            frontRightPressure += randomDouble(0.005, 0.020);
+            tireSensor.setFrontRightPressure(frontRightPressure);
+
+            rearLeftPressure += randomDouble(0.005, 0.020);
+            tireSensor.setRearLeftPressure(rearLeftPressure);
+
+            rearRightPressure += randomDouble(0.005, 0.020);
+            tireSensor.setRearRightPressure(rearRightPressure);
+
+            // tire temperature
+            frontLeftTireTemperature += randomDouble(0.03, 0.08);
+            tireSensor.setFrontLeftTemperature(frontLeftTireTemperature);
+
+            frontRightTireTemperature += randomDouble(0.03, 0.08);
+            tireSensor.setFrontRightTemperature(frontRightTireTemperature);
+
+            rearLeftTireTemperature += randomDouble(0.03, 0.08);
+            tireSensor.setRearLeftTemperature(rearLeftTireTemperature);
+
+            rearRightTireTemperature += randomDouble(0.03, 0.08);
+            tireSensor.setRearRightTemperature(rearRightTireTemperature);
+
+            elapsed++;
+
+            screen.Post(Event::Custom);
+
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+
+
+        currentPhase = "CRUISING";
+
+        for (int i = 0; i < phaseDuration; i++) {
+
+            // speed
+            speedSensor.setSpeed(maxSpeed);
+
+            // acceleration
+            accelSensor.setAcceleration(0.0, 0.0, 9.80665);
+
+            // coolant temperature
+            if (coolantTemperature < 96.0) {
+                coolantTemperature += randomDouble(0.01, 0.05);
+            }
+            else {
+                coolantTemperature += randomDouble(-0.02, 0.02);
+            }
+            tempSensor.setCoolantTemperature(coolantTemperature);
+
+            // battery voltage
+            batteryVoltage += randomDouble(-0.01, 0.01);
+            battSensor.setVoltage(batteryVoltage);
+
+            // battery current
+            batteryCurrent += randomDouble(-0.5, 0.5);
+            battSensor.setCurrent(batteryCurrent);
+
+            // battery temperature
+            batteryTemperature += randomDouble(0.005, 0.01);
+            battSensor.setTemperature(batteryTemperature);
+
+            // fuel
+            remainingFuel -= randomDouble(0.002, 0.006);
+            fuelSensor.setFuelLiters(remainingFuel);
+
+            // super slight brake pressure
+            brakeSensor.setFrontBrakePressure(0.0);
+            brakeSensor.setRearBrakePressure(0.0);
+
+            // tire pressure slowly rises
+            frontLeftPressure += randomDouble(0.005, 0.010);
+            tireSensor.setFrontLeftPressure(frontLeftPressure);
+
+            frontRightPressure += randomDouble(0.005, 0.010);
+            tireSensor.setFrontRightPressure(frontRightPressure);
+
+            rearLeftPressure += randomDouble(0.005, 0.010);
+            tireSensor.setRearLeftPressure(rearLeftPressure);
+
+            rearRightPressure += randomDouble(0.005, 0.010);
+            tireSensor.setRearRightPressure(rearRightPressure);
+
+            // tires continue warming
+            frontLeftTireTemperature += randomDouble(0.03, 0.08);
+            tireSensor.setFrontLeftTemperature(frontLeftTireTemperature);
+
+            frontRightTireTemperature += randomDouble(0.03, 0.08);
+            tireSensor.setFrontRightTemperature(frontRightTireTemperature);
+
+            rearLeftTireTemperature += randomDouble(0.03, 0.08);
+            tireSensor.setRearLeftTemperature(rearLeftTireTemperature);
+
+            rearRightTireTemperature += randomDouble(0.03, 0.08);
+            tireSensor.setRearRightTemperature(rearRightTireTemperature);
+
+            elapsed++;
+
+            screen.Post(Event::Custom);
+
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+
+        double speedDecreasePerSecond = maxSpeed / phaseDuration;
+
+        double longitudinalDeceleration = -(speedDecreasePerSecond * 0.44704);
+
+        currentPhase = "DECELERATING";
+
+        for (int i = 0; i < phaseDuration; i++) {
+
+            // speed
+            vehicleSpeed -= speedDecreasePerSecond;
+
+            if (vehicleSpeed < 0.0) {
+                vehicleSpeed = 0.0;
+            }
+
+            speedSensor.setSpeed(vehicleSpeed);
+
+            // acceleration
+            accelSensor.setAcceleration(longitudinalDeceleration, 0.0, 9.80665);
+
+            // coolant temperature
+            coolantTemperature += randomDouble(-0.04, 0.01);
+
+            tempSensor.setCoolantTemperature(coolantTemperature);
+
+            // battery voltage
+            batteryVoltage += randomDouble(-0.01, 0.01);
+
+            // keep charging voltage in a healthy range
+            if (batteryVoltage > 14.5) {
+                batteryVoltage = 14.5;
+            }
+
+            if (batteryVoltage < 13.7) {
+                batteryVoltage = 13.7;
+            }
+
+            battSensor.setVoltage(batteryVoltage);
+
+            // battery current
+            batteryCurrent += randomDouble(-0.3, 0.3);
+
+            battSensor.setCurrent(batteryCurrent);
+
+            // battery temperature
+            batteryTemperature += randomDouble(0.0, 0.005);
+
+            battSensor.setTemperature(batteryTemperature);
+
+            // fuel
+            remainingFuel -= randomDouble(0.001, 0.003);
+
+            if (remainingFuel < 0.0) {
+                remainingFuel = 0.0;
+            }
+
+            fuelSensor.setFuelLiters(remainingFuel);
+
+            // super slight brake pressure
+            double frontBrakePressure = randomDouble(350.0, 500.0);
+
+            double rearBrakePressure = randomDouble(300.0, 450.0);
+
+            brakeSensor.setFrontBrakePressure(frontBrakePressure);
+ 
+            brakeSensor.setRearBrakePressure(rearBrakePressure);
+
+            // tire pressure slowly rises
+            frontLeftPressure += randomDouble(-0.005, 0.005);
+
+            frontRightPressure += randomDouble(-0.005, 0.005);
+
+            rearLeftPressure += randomDouble(-0.005, 0.005);
+
+            rearRightPressure += randomDouble(-0.005, 0.005);
+
+            tireSensor.setFrontLeftPressure(frontLeftPressure);
+
+            tireSensor.setFrontRightPressure(frontRightPressure);
+
+            tireSensor.setRearLeftPressure(rearLeftPressure);
+
+            tireSensor.setRearRightPressure(rearRightPressure);
+
+            // tires continue warming
+            frontLeftTireTemperature += randomDouble(0.00, 0.03);
+
+            frontRightTireTemperature += randomDouble(0.00, 0.03);
+
+            rearLeftTireTemperature += randomDouble(0.00, 0.02);
+
+            rearRightTireTemperature += randomDouble(0.00, 0.02);
+
+            tireSensor.setFrontLeftTemperature(frontLeftTireTemperature);
+
+            tireSensor.setFrontRightTemperature(frontRightTireTemperature);
+
+            tireSensor.setRearLeftTemperature(rearLeftTireTemperature);
+
+            tireSensor.setRearRightTemperature(rearRightTireTemperature);
+
+            elapsed++;
+
+            screen.Post(Event::Custom);
+
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+
+        currentPhase = "TESTING COMPLETE";
+
+        vehicleSpeed = 0.0;
+
+        speedSensor.setSpeed(0.0);
+
+        accelSensor.setAcceleration(0.0, 0.0, 9.80665);
+
+        brakeSensor.setFrontBrakePressure(0.0);
+        brakeSensor.setRearBrakePressure(0.0);
+    });
+
+    screen.Loop(renderer);
+
+    simulationThread.join();
 
     return 0;
-}
+};
